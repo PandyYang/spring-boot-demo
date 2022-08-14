@@ -143,7 +143,10 @@
             },
             _initSockJs() {
                 this._getServerInfo();
+                // 前端通过notification 端点进行连接
                 this.socket = new SockJS(wsHost);
+                // 通过 SockJS 的 WebSocket 模拟以及通过 STOMP 作为 WebSocket 上的子协议的发布-订阅消息传递。
+                // 详见文档: https://docs.spring.io/spring-framework/docs/5.1.2.RELEASE/spring-framework-reference/web.html#websocket
                 this.stompClient = Stomp.over(this.socket);
 
                 this.stompClient.connect({}, (frame) => {
@@ -151,7 +154,8 @@
                     this.isConnected = true;
                     this.$message('websocket服务器连接成功');
 
-                    // 另外再注册一下消息推送
+                    // 推送消息的地址
+                    // 后端进行的是一个简单的消息代理配置 SimpleBrokerRegistration enableSimpleBroker
                     this.stompClient.subscribe(wsTopic, (response) => {
                         this.server = JSON.parse(response.body);
                     });
